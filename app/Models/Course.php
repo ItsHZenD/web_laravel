@@ -12,9 +12,9 @@ class Course extends Model
         'name',
     ];
 
-    protected $appends =[
-        'year_created_at',
-    ];
+    // protected $appends =[
+    //     'year_created_at',
+    // ];
     public function getYearCreatedAtAttribute($value)
     {
         return $this->created_at->format('Y');

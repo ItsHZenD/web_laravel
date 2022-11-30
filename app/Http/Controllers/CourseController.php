@@ -28,49 +28,67 @@ class CourseController extends Controller
     //     ]);
     // }
 
-        private string $title = 'Something was wrong :))';
-        private  $model ;
-        public function __construct()
-        {
-            $this->model = (new Course())->query() ;
-            $routeName = Route::currentRouteName();
-            $arr = explode('.', $routeName);
-            $arr = array_map('ucfirst', $arr);
-            $name  = implode('/', $arr);
-            View::share('title', $this->title);
-            View::share('name', $name);
-        }
-    public function index(){
+    private string $title = 'Something was wrong :))';
+    private $model;
+    public function __construct()
+    {
+        $this->model = (new Course())->query();
+        $routeName = Route::currentRouteName();
+        $arr = explode('.', $routeName);
+        $arr = array_map('ucfirst', $arr);
+        $name = implode('/', $arr);
+        View::share('title', $this->title);
+        View::share('name', $name);
+    }
+    public function index()
+    {
         return view('course.index');
     }
 
-    public function api(){
-        $data = $this->model->paginate();
-        $arr = [];
-        $arr['draw'] = $data->currentPage();
-        $arr['data'] = [];
-        foreach($data->items() as $item){
-            $item->edit = route('course.edit', $item);
-            $item->destroy = route('course.destroy', $item);
-            $arr['data'][] = $item;
-        }
-        $arr['recordsTotal'] = $data->total();
-        $arr['recordsFiltered'] = $data->total();
-        return $arr;
-        // return DataTables::of($this->model)
-        // ->editColumn('created_at', function($object){
-        //     return $object->year_created_at;
-        // })
-        // ->addColumn('edit', function($object){
-        //     // $link = route('course.edit', $object);
+    // public function api(Request $request)
+    // {
+    //     $data = $this->model->paginate(2,['*'], 'page', $request->get('draw'));
+    //     $arr = [];
+    //     $arr['draw'] = $data->currentPage();
+    //     $arr['data'] = [];
+    //     foreach ($data->items() as $item) {
+    //         $item->setAppends([
+    //             'year_created_at'
+    //         ]);
+    //         $item->edit = route('courses.edit', $item);
+    //         $item->destroy = route('courses.destroy', $item);
+    //         $arr['data'][] = $item;
+    //     }
+    //     $arr['recordsTotal'] = $data->total();
+    //     $arr['recordsFiltered'] = $data->total();
+    //     return $arr;
+    // }
+    public function api()
+    {
 
-        //     // return "<a class='btn btn-info' href='$link'>Edit</a>";
-        //     return route('course.edit', $object);
-        // })
-        // ->addColumn('destroy', function($object){
-        //     return route('course.destroy', $object);
-        // })
-        // ->make(true);
+        return DataTables::of($this->model)
+            ->editColumn('created_at', function ($object) {
+                return $object->year_created_at;
+            })
+            ->addColumn('edit', function ($object) {
+                // $link = route('courses.edit', $object);
+
+                // return "<a class='btn btn-info' href='$link'>Edit</a>";
+                return route('courses.edit', $object);
+            })
+            ->addColumn('destroy', function ($object) {
+                return route('courses.destroy', $object);
+            })
+            ->make(true);
+    }
+    public function apiName(Request $request)
+    {
+        return $this->model
+            ->where('name', 'like', '%'.$request->get('q').'%')
+            ->get([
+                'id',
+                'name',
+            ]);
     }
     /**
      * Show the form for creating a new resource.
@@ -96,7 +114,7 @@ class CourseController extends Controller
 
         $this->model->create($request->except('_token'));
         // Course::created($request->validated());
-        return redirect()->route('course.index');
+        return redirect()->route('courses.index');
     }
 
     /**
@@ -120,7 +138,7 @@ class CourseController extends Controller
     }
 
 
-    public function update(UpdateRequest $request,  $courseId)
+    public function update(UpdateRequest $request, $courseId)
     {
         // $this->model->where('id', $courseId)->update(
         //     $request->validated();
@@ -129,7 +147,7 @@ class CourseController extends Controller
         $this->model->update(
             $request->validated()
         );
-        return redirect()->route('course.index');
+        return redirect()->route('courses.index');
 
     }
 
@@ -145,7 +163,7 @@ class CourseController extends Controller
         $this->model->where('id', $courseId)->delete();
         // $this->model->find($courseId)->delete();
         // return redirect()->route('course.index');
-        $arr =[];
+        $arr = [];
         $arr['status'] = true;
         $arr['message'] = '';
         return response($arr, 200);
