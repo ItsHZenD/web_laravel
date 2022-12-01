@@ -7,7 +7,7 @@
 @section('content')
 
     <div class="card">
-        @if ($errors->any())
+        {{-- @if ($errors->any())
             <div class="card-header">
                 <div class="alert alert-danger">
                     <ul>
@@ -17,7 +17,7 @@
                     </ul>
                 </div>
             </div>
-        @endif
+        @endif --}}
         <div class="card-body">
             <a class="btn btn-primary" href="{{ route('students.create') }}">
                 ADD
@@ -127,8 +127,8 @@
                         name: 'name'
                     },
                     {
-                        data: 'created_at',
-                        name: 'created_at'
+                        data: 'age',
+                        name: 'age'
                     },
                     {
                         data: 'edit',

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\StudentStatusEnum;
 use App\Models\Student;
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
@@ -21,8 +22,10 @@ class StudentController extends Controller
         $arr = explode('.', $routeName);
         $arr = array_map('ucfirst', $arr);
         $name = implode('/', $arr);
+        $arrStudentStatus =  StudentStatusEnum::getArrayView();
         View::share('title', $this->title);
         View::share('name', $name);
+        View::share('arrStudentStatus', $arrStudentStatus);
     }
 
     public function index()
@@ -34,17 +37,17 @@ class StudentController extends Controller
     {
 
         return DataTables::of($this->model)
-            ->editColumn('birthdate', function ($object) {
-                return $object->year_created_at;
+            ->addColumn('birthdate', function ($object) {
+                return $object->age;
             })
             ->addColumn('edit', function ($object) {
                 // $link = route('courses.edit', $object);
 
                 // return "<a class='btn btn-info' href='$link'>Edit</a>";
-                return route('courses.edit', $object);
+                return route('students.edit', $object);
             })
             ->addColumn('destroy', function ($object) {
-                return route('courses.destroy', $object);
+                return route('students.destroy', $object);
             })
             ->make(true);
     }
@@ -55,7 +58,8 @@ class StudentController extends Controller
      */
     public function create()
     {
-        //
+        return view('student.create');
+
     }
 
     /**
