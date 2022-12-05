@@ -142,6 +142,13 @@
                         </div>
                     </div>
                 @endif
+                @if (session()->has('success'))
+                    <div class="col-12">
+                        <div class="alert alert-success">
+                            {{ session()->get('success') }}
+                        </div>
+                    </div>
+                @endif
             </div>
             @yield('content')
             @include('layout.footer')

@@ -20,4 +20,9 @@ class Course extends Model
         return $this->created_at->format('Y');
         // return date_format(date_create($this->created_at), 'Y');
     }
+
+    public function students(){
+        return $this->hasMany(Student::class);
+    }
+
 }

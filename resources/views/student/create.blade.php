@@ -10,10 +10,10 @@
     </div>
 @endif --}}
 
-    <form action="{{ route('courses.store') }}" method="post">
+    <form action="{{ route('students.store') }}" method="post">
         @csrf
         Name
-        <input type="text" name="name" >
+        <input type="text" name="name">
         {{-- @if ($errors->has('name'))
         <span class="error">
             {{ $errors->first('name') }}
@@ -29,12 +29,20 @@
         <br>
         Status
         @foreach ($arrStudentStatus as $option => $value)
-
-        <input type="radio" name="status" value="{{ $value }}">{{ $option }}
+            <input type="radio" name="status" value="{{ $value }}"
+                @if ($loop->first) checked  @endif>
+            {{ $option }}
+            <br>
         @endforeach
         <br>
-
-        <br>
+        Course
+        <select name="course_id">
+            @foreach ($courses as $course)
+            <option value="{{ $course->id }}">
+                {{ $course->name }}
+            </option>
+            @endforeach
+        </select>
         <Button>ADD</Button>
     </form>
 @endsection

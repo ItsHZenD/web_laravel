@@ -5,7 +5,6 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 @endpush
 @section('content')
-
     <div class="card">
         {{-- @if ($errors->any())
             <div class="card-header">
@@ -23,7 +22,15 @@
                 ADD
             </a>
             <div class="form-group">
-                <select id="select-name" style="width: 244px !important;"></select>
+                <select id="select-course-name" style="width: 244px !important;"></select>
+            </div>
+            <div class="form-group">
+                <select id="select-status" style="width: 244px !important;">
+                    <option value="0">Tất cả </option>
+                    @foreach ($arrStudentStatus as $option => $value )
+                        <option value="{{ $value }}">{{ $option }}</option>
+                    @endforeach
+                </select>
             </div>
 
             {{-- <form class="float-right form-group form-inline">
@@ -36,6 +43,9 @@
                         <th>#</th>
                         <th>Name</th>
                         <th>Age</th>
+                        <th>Gender</th>
+                        <th>Status</th>
+                        <th>Course Name</th>
                         <th>Edit</th>
                         <th>Delete</th>
                     </tr>
@@ -86,13 +96,36 @@
     </script>
     <script script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
+        $(function() {
+            $("#select-course-name").select2({
+                ajax: {
+                    url: "{{ route('courses.api.name') }}",
+                    dataType: 'json',
+                    data: function(params) {
+                        return {
+                            q: params.term // search term
+                        };
+                    },
+                    processResults: function(data, params) {
+                        return {
+                            results: $.map(data, function(item) {
+                                return {
+                                    text: item.name,
+                                    id: item.id
+                                }
+                            })
+                        };
+                    }
+                },
+                placeholder: 'Search for a name'
+            });
             var buttonCommon = {
                 exportOptions: {
                     columns: ':visible :not(.not-export)'
                 }
             };
             let table = $('#table-index').DataTable({
-                dom: 'Blrtip',
+                dom: 'Bflrtip',
                 select: true,
                 buttons: [
                     $.extend(true, {}, buttonCommon, {
@@ -110,7 +143,7 @@
                     }),
                     'colvis'
                 ],
-                lengthMenu: [2, 4, 10, 25, 100],
+                lengthMenu: [10, 25, 100],
                 processing: true,
                 serverSide: true,
                 ajax: "{!! route('students.api') !!}",
@@ -131,14 +164,26 @@
                         name: 'age'
                     },
                     {
+                        data: 'gender',
+                        name: 'gender'
+                    },
+                    {
+                        data: 'status',
+                        name: 'status'
+                    },
+                    {
+                        data: 'course_name',
+                        name: 'course_name'
+                    },
+                    {
                         data: 'edit',
                         target: 3,
                         orderable: false,
                         searchable: false,
                         render: function(data, type, row, meta) {
                             return `<a class="btn btn-info" href="${data}">
-                        Edit
-                        </a>`;
+                                Edit
+                                </a>`;
                         }
                     },
                     {
@@ -148,15 +193,26 @@
                         searchable: false,
                         render: function(data, type, row, meta) {
                             return `<form action="${data}" method="post">
-                            @csrf
-                            @method('DELETE')
-                            <button class="btn btn-delete btn-danger">Delete</button>
-                            </form>`;
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-delete btn-danger">Delete</button>
+                                    </form>`;
                         }
                     },
                 ]
             });
-
+            $('#select-course-name').change(function() {
+                table.column(5).search($(this).val()).draw();
+            });
+            $('#select-status').change(function() {
+                // let value = $(this).val();
+                // if(value==='0'){
+                //     table.column(4).search('').draw();
+                // }else{
+                //     table.column(4).search(value).draw();
+                // }
+                table.column(4).search($(this).val()).draw();
+            });
             $(document).on('click', '.btn-delete', function() {
                 let form = $(this).parents('form');
                 let row = $(this).parents('tr');
@@ -174,5 +230,6 @@
                     }
                 });
             });
+        })
     </script>
 @endpush

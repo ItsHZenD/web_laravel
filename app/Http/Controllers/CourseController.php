@@ -66,7 +66,7 @@ class CourseController extends Controller
     public function api()
     {
 
-        return DataTables::of($this->model)
+        return DataTables::of($this->model->withCount('students'))
             ->editColumn('created_at', function ($object) {
                 return $object->year_created_at;
             })
