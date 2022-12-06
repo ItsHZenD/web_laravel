@@ -10,7 +10,7 @@
     </div>
 @endif --}}
 
-    <form action="{{ route('students.store') }}" method="post">
+    <form action="{{ route('students.store') }}" method="post"  enctype="multipart/form-data">
         @csrf
         Name
         <input type="text" name="name">
@@ -35,6 +35,9 @@
             <br>
         @endforeach
         <br>
+        Avatar
+        <input type="file" name="avatar">
+        <br>
         Course
         <select name="course_id">
             @foreach ($courses as $course)
@@ -43,6 +46,6 @@
             </option>
             @endforeach
         </select>
-        <Button>ADD</Button>
+        <Button>Create</Button>
     </form>
 @endsection

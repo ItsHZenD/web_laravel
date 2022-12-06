@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateStudentRequest;
 use App\Models\Course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use Yajra\DataTables\DataTables;
 
@@ -24,7 +25,7 @@ class StudentController extends Controller
         $arr = explode('.', $routeName);
         $arr = array_map('ucfirst', $arr);
         $name = implode('/', $arr);
-        $arrStudentStatus =  StudentStatusEnum::getArrayView();
+        $arrStudentStatus = StudentStatusEnum::getArrayView();
         View::share('title', $this->title);
         View::share('name', $name);
         View::share('arrStudentStatus', $arrStudentStatus);
@@ -64,14 +65,20 @@ class StudentController extends Controller
                 return route('students.destroy', $object);
             })
             ->filterColumn('course_name', function ($query, $keyword) {
-                $query->whereHas('course', function ($q) use ($keyword) {
-                    return $q->where('id', $keyword);
+                if ($keyword !== 'null') {
+                    $query->whereHas(
+                        'course',
+                        function ($q) use ($keyword) {
+                                return $q->where('id', $keyword);
+                            }
+                    );
+
                 }
-                );
+
             })
             ->filterColumn('status', function ($query, $keyword) {
-                if($keyword !=='0')
-                $query->where('status', $keyword);
+                if ($keyword !== '0')
+                    $query->where('status', $keyword);
             })
             ->make(true);
     }
@@ -83,7 +90,7 @@ class StudentController extends Controller
     public function create()
     {
         $courses = Course::get();
-        return view('student.create',[
+        return view('student.create', [
             'courses' => $courses,
         ]);
 
@@ -97,7 +104,10 @@ class StudentController extends Controller
      */
     public function store(StoreStudentRequest $request)
     {
-        $this->model->create($request->validated());
+        $path = Storage::disk('public')->put('avatars', $request->file('avatar'));
+        $arr = $request->validated();
+        $arr['avatar'] = $path;
+        $this->model->create($arr);
         return redirect()->route('students.index')->with('success', 'Đã thêm thành công');
     }
 

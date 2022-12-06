@@ -14,6 +14,7 @@ class Student extends Model
         'gender',
         'birthdate',
         'status',
+        'avatar',
         'course_id',
     ];
 

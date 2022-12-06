@@ -45,6 +45,7 @@
                         <th>Age</th>
                         <th>Gender</th>
                         <th>Status</th>
+                        <th>Avatar</th>
                         <th>Course Name</th>
                         <th>Edit</th>
                         <th>Delete</th>
@@ -117,7 +118,8 @@
                         };
                     }
                 },
-                placeholder: 'Search for a name'
+                placeholder: 'Search for a name',
+                allowClear: true
             });
             var buttonCommon = {
                 exportOptions: {
@@ -172,12 +174,25 @@
                         name: 'status'
                     },
                     {
+                        data: 'avatar',
+                        target: 5,
+                        orderable: false,
+                        searchable: false,
+                        render: function(data, type, row, meta) {
+                            if(!data){
+                                return '';
+                            }
+                            return `<img src="{{ asset('storage/${data}') }}">`;
+                            // return `<img src="{{ public_path() }}/${data}">`;
+                        }
+                    },
+                    {
                         data: 'course_name',
                         name: 'course_name'
                     },
                     {
                         data: 'edit',
-                        target: 3,
+                        target: 7,
                         orderable: false,
                         searchable: false,
                         render: function(data, type, row, meta) {
@@ -188,7 +203,7 @@
                     },
                     {
                         data: 'destroy',
-                        target: 4,
+                        target: 8,
                         orderable: false,
                         searchable: false,
                         render: function(data, type, row, meta) {
@@ -202,7 +217,7 @@
                 ]
             });
             $('#select-course-name').change(function() {
-                table.column(5).search($(this).val()).draw();
+                table.column(6).search($(this).val()).draw();
             });
             $('#select-status').change(function() {
                 // let value = $(this).val();
