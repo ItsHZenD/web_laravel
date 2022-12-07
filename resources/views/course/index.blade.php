@@ -38,7 +38,9 @@
                         <th>Number Students</th>
                         <th>Created At</th>
                         <th>Edit</th>
+                        @if (checkSuperAdmin())
                         <th>Delete</th>
+                        @endif
                     </tr>
                 </thead>
                 {{--
@@ -160,7 +162,7 @@
                     },
                     {
                         data: 'edit',
-                        target: 3,
+                        target: 4,
                         orderable: false,
                         searchable: false,
                         render: function(data, type, row, meta) {
@@ -169,19 +171,21 @@
                         </a>`;
                         }
                     },
+                    @if (checkSuperAdmin())
                     {
                         data: 'destroy',
-                        target: 4,
+                        target: 5,
                         orderable: false,
                         searchable: false,
                         render: function(data, type, row, meta) {
                             return `<form action="${data}" method="post">
                             @csrf
                             @method('DELETE')
-                            <button class="btn btn-delete btn-danger">Delete</button>
+                            <button type="submit" class="btn btn-delete btn-danger">Delete</button>
                             </form>`;
                         }
                     },
+                    @endif
                 ]
             });
             $('#select-name').change(function() {
