@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\User;
 use App\Notifications\UserRegisteredNotificationMail;
+use Illuminate\Support\Facades\Notification;
 
 class UserObserver
 {
@@ -15,7 +16,8 @@ class UserObserver
      */
     public function created(User $user)
     {
-            $user->notify(new UserRegisteredNotificationMail($user));
+        // Notification::send($user, new UserRegisteredNotificationMail($user));
+        // $user->notify(new UserRegisteredNotificationMail($user));
     }
 
     /**

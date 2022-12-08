@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\UserRegisteredEvent;
 use App\Models\User;
 use Illuminate\Http\Client\Request as ClientRequest;
 use Illuminate\Http\Request;
@@ -50,13 +51,14 @@ class AuthController extends Controller
 
     public function processRegister(Request $request)
     {
-        User::query()
+        $user = User::query()
             ->create([
                 'name' => $request->get('name'),
                 'email' => $request->get('email'),
                 'password' =>Hash::make( $request->get('password')),
                 'level' => 0,
             ]);
+        UserRegisteredEvent::dispatch($user);
     }
 
 }
